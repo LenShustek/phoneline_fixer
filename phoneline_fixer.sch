@@ -8857,6 +8857,10 @@ test point</text>
 that the PBX is doing just after off-hook as a dialed digit "1". 
 We disconnect the two of them for the first 600 milliseconds of an
 off-hook to prevent the erroneous "1" from reaching the CO.</text>
+<text x="73.152" y="137.16" size="1.778" layer="91" rot="R90">reverse</text>
+<text x="73.152" y="70.866" size="1.778" layer="91" rot="R90">reverse</text>
+<text x="55.118" y="70.866" size="1.778" layer="91" rot="R90">normal</text>
+<text x="55.118" y="137.414" size="1.778" layer="91" rot="R90">normal</text>
 </plain>
 <instances>
 <instance part="FRAME1" gate="G$1" x="0" y="0" smashed="yes"/>
@@ -8888,14 +8892,14 @@ off-hook to prevent the erroneous "1" from reaching the CO.</text>
 <instance part="SUPPLY2" gate="GND" x="139.7" y="162.56" smashed="yes">
 <attribute name="VALUE" x="137.795" y="159.385" size="1.778" layer="96"/>
 </instance>
-<instance part="SUPPLY3" gate="GND" x="180.34" y="119.38" smashed="yes">
-<attribute name="VALUE" x="178.435" y="116.205" size="1.778" layer="96"/>
+<instance part="SUPPLY3" gate="GND" x="182.88" y="119.38" smashed="yes">
+<attribute name="VALUE" x="180.975" y="116.205" size="1.778" layer="96"/>
 </instance>
 <instance part="P+1" gate="VCC" x="139.7" y="200.66" smashed="yes">
 <attribute name="VALUE" x="137.16" y="198.12" size="1.778" layer="96" rot="R90"/>
 </instance>
-<instance part="P+2" gate="VCC" x="182.88" y="144.78" smashed="yes">
-<attribute name="VALUE" x="180.34" y="142.24" size="1.778" layer="96" rot="R90"/>
+<instance part="P+2" gate="VCC" x="182.88" y="147.32" smashed="yes">
+<attribute name="VALUE" x="180.34" y="144.78" size="1.778" layer="96" rot="R90"/>
 </instance>
 <instance part="R4" gate="G$1" x="119.38" y="132.08" smashed="yes">
 <attribute name="NAME" x="115.57" y="133.5786" size="1.778" layer="95"/>
@@ -9032,9 +9036,9 @@ off-hook to prevent the erroneous "1" from reaching the CO.</text>
 </segment>
 <segment>
 <pinref part="SUPPLY3" gate="GND" pin="GND"/>
-<wire x1="180.34" y1="121.92" x2="180.34" y2="129.54" width="0.1524" layer="91"/>
+<wire x1="182.88" y1="121.92" x2="182.88" y2="129.54" width="0.1524" layer="91"/>
 <pinref part="PCB1" gate="G$1" pin="GND."/>
-<wire x1="180.34" y1="129.54" x2="190.5" y2="129.54" width="0.1524" layer="91"/>
+<wire x1="182.88" y1="129.54" x2="190.5" y2="129.54" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <wire x1="139.7" y1="119.38" x2="139.7" y2="116.84" width="0.1524" layer="91"/>
@@ -9079,7 +9083,7 @@ off-hook to prevent the erroneous "1" from reaching the CO.</text>
 <segment>
 <pinref part="P+2" gate="VCC" pin="VCC"/>
 <pinref part="PCB1" gate="G$1" pin="5V"/>
-<wire x1="182.88" y1="142.24" x2="182.88" y2="134.62" width="0.1524" layer="91"/>
+<wire x1="182.88" y1="144.78" x2="182.88" y2="134.62" width="0.1524" layer="91"/>
 <wire x1="182.88" y1="134.62" x2="190.5" y2="134.62" width="0.1524" layer="91"/>
 </segment>
 <segment>
@@ -9205,11 +9209,11 @@ off-hook to prevent the erroneous "1" from reaching the CO.</text>
 <pinref part="U$4" gate="G$1" pin="6"/>
 <wire x1="78.74" y1="66.04" x2="68.58" y2="66.04" width="0.1524" layer="91"/>
 <wire x1="58.42" y1="149.86" x2="58.42" y2="152.4" width="0.1524" layer="91"/>
-<wire x1="58.42" y1="152.4" x2="76.2" y2="152.4" width="0.1524" layer="91"/>
-<wire x1="76.2" y1="152.4" x2="76.2" y2="132.08" width="0.1524" layer="91"/>
-<wire x1="76.2" y1="132.08" x2="68.58" y2="132.08" width="0.1524" layer="91"/>
-<wire x1="76.2" y1="132.08" x2="93.98" y2="132.08" width="0.1524" layer="91"/>
-<junction x="76.2" y="132.08"/>
+<wire x1="58.42" y1="152.4" x2="78.74" y2="152.4" width="0.1524" layer="91"/>
+<wire x1="78.74" y1="152.4" x2="78.74" y2="132.08" width="0.1524" layer="91"/>
+<wire x1="78.74" y1="132.08" x2="68.58" y2="132.08" width="0.1524" layer="91"/>
+<wire x1="78.74" y1="132.08" x2="93.98" y2="132.08" width="0.1524" layer="91"/>
+<junction x="78.74" y="132.08"/>
 <wire x1="93.98" y1="132.08" x2="93.98" y2="86.36" width="0.1524" layer="91"/>
 <pinref part="R7" gate="G$1" pin="2"/>
 <wire x1="93.98" y1="86.36" x2="93.98" y2="76.2" width="0.1524" layer="91"/>
@@ -9266,17 +9270,17 @@ off-hook to prevent the erroneous "1" from reaching the CO.</text>
 </net>
 <net name="N$18" class="0">
 <segment>
-<wire x1="68.58" y1="149.86" x2="73.66" y2="149.86" width="0.1524" layer="91"/>
-<wire x1="73.66" y1="149.86" x2="73.66" y2="129.54" width="0.1524" layer="91"/>
-<wire x1="73.66" y1="129.54" x2="58.42" y2="129.54" width="0.1524" layer="91"/>
+<wire x1="68.58" y1="149.86" x2="76.2" y2="149.86" width="0.1524" layer="91"/>
+<wire x1="76.2" y1="149.86" x2="76.2" y2="129.54" width="0.1524" layer="91"/>
+<wire x1="76.2" y1="129.54" x2="58.42" y2="129.54" width="0.1524" layer="91"/>
 <wire x1="58.42" y1="129.54" x2="58.42" y2="132.08" width="0.1524" layer="91"/>
 <pinref part="U$1" gate="G$1A" pin="D2"/>
 <wire x1="109.22" y1="109.22" x2="109.22" y2="149.86" width="0.1524" layer="91"/>
 <pinref part="R1" gate="G$1" pin="1"/>
 <wire x1="109.22" y1="149.86" x2="109.22" y2="180.34" width="0.1524" layer="91"/>
 <wire x1="109.22" y1="180.34" x2="114.3" y2="180.34" width="0.1524" layer="91"/>
-<wire x1="73.66" y1="149.86" x2="109.22" y2="149.86" width="0.1524" layer="91"/>
-<junction x="73.66" y="149.86"/>
+<wire x1="76.2" y1="149.86" x2="109.22" y2="149.86" width="0.1524" layer="91"/>
+<junction x="76.2" y="149.86"/>
 <junction x="109.22" y="149.86"/>
 <pinref part="U$3" gate="G$1" pin="3"/>
 <pinref part="U$3" gate="G$1" pin="4"/>

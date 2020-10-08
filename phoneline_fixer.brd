@@ -200,13 +200,15 @@
 <text x="8.001" y="50.292" size="2.1844" layer="21" ratio="15">PBX to CO line fixer</text>
 <text x="7.874" y="47.117" size="1.778" layer="21" ratio="10">L. Shustek, Oct 2020</text>
 <text x="77.089" y="1.905" size="1.27" layer="21">JLCJLCJLCJLC</text>
-<text x="23.876" y="32.766" size="1.4224" layer="21" ratio="10">REV</text>
-<text x="67.056" y="32.766" size="1.4224" layer="21" ratio="10">REV</text>
+<text x="24.384" y="32.766" size="1.016" layer="21" ratio="10">REV</text>
+<text x="67.437" y="32.893" size="1.016" layer="21" ratio="10">REV</text>
 <text x="75.946" y="39.878" size="1.4224" layer="21" ratio="10">TLP222G</text>
 <text x="73.66" y="5.715" size="1.27" layer="21" ratio="12" rot="R180">GND</text>
 <text x="61.595" y="5.715" size="1.27" layer="21" ratio="12" rot="R180">+5V</text>
 <dimension x1="0" y1="58.42" x2="95.25" y2="58.42" x3="47.625" y3="57.15" textsize="1.778" layer="20" unit="inch"/>
 <dimension x1="97.79" y1="55.118" x2="97.79" y2="0" x3="-2.54" y3="27.559" textsize="1.778" layer="20" unit="inch"/>
+<text x="22.86" y="24.384" size="1.016" layer="21" ratio="10">NORM</text>
+<text x="66.167" y="24.511" size="1.016" layer="21" ratio="10">NORM</text>
 </plain>
 <libraries>
 <library name="resistor" urn="urn:adsk.eagle:library:348">

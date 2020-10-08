@@ -1,6 +1,6 @@
 /* ----------------------------------------------------------------------------
    This is the software for a very strange box that solves a very strange
-   problem  with my Panasonic KX-T30810 PBX phone switch.
+   problem with my Panasonic KX-T30810 PBX phone switch.
 
    When AT&T changed one of our three Central Office lines, it didn't work
    with my venerable 30-year-old Panasonic 3x8 phone switch. There was no
@@ -11,7 +11,7 @@
 
    After much experimentation, and an online discussion at
    https://sundance-communications.com/forum/ubbthreads.php/topics/638453/1
-   with an experienced group of phone installers, the diagnosis was that
+   with a group of experienced phone installers, the diagnosis was that
    something the phone switch is doing just after the phone goes off-hook
    is being interpreted on that new CO line -- and *only* on that CO line
    -- as a "1" being dialed. That stops the dial tone, and any phone number
@@ -28,12 +28,12 @@
    it reconnects the switch to the CO line and removes the shunt. It works!
 
    The box contains:
-   - two RJ11 connectors, one USB power connector, and a ground/earth connector
+   - two RJ11 connectors, a USB power connector, and a ground/earth connector
    - polarity-reversing switches for both ports
    - voltage measurement circuits for the PBX Tip and Ring lines
    - solid-state relays to connect the PBX Ring to the CO Ring, and to apply
      an off-hook holding shunt to the CO line
-   - an Arduino Nano microprocessor
+   - an Arduino Nano microprocessor; use processor "ATmega328P (Old Bootloader)"
 
    Len Shustek September 29, 2020
 
@@ -61,20 +61,20 @@
    -------------------------------------------------------------------------------------------------*/
 
 #define DEBUG 0  // level 0 (none), 1 (a little), or 2 (a lot)
-// Note that debugging screws up timing, so things don't work exactly right
-// Also: use puTTY in VT100 mode to view it, not the Arduino IDE Serial Monitor
+// Note that the debugging output screws up timing, so things don't work exactly right.
+// Also: use puTTY in VT100 mode to view it, not the Arduino IDE Serial Monitor.
 
 #define TEST_MOSFETS false
 
-#define CURSOR_UP3 "\e[3A" // works for puTTY VT100, but not for Arduino's Serial Monitor
-#define CURSOR_UP2 "\e[2A" // works for puTTY VT100, but not for Arduino's Serial Monitor
-#define CURSOR_UP1 "\e[1A" // works for puTTY VT100, but not for Arduino's Serial Monitor
+#define CURSOR_UP3 "\e[3A" // these cursor movements work for puTTY VT100, 
+#define CURSOR_UP2 "\e[2A" // but not for Arduino's Serial Monitor
+#define CURSOR_UP1 "\e[1A" // 
 
-#define CO_LINE_RING A1     // ring, red, -48V on hook
-#define CO_LINE_TIP  A0     // tip, green, close to ground on hook
-#define DISCONNECT_SHUNT 4  // high to disconnect
-#define DISCONNECT_CO_PBX 3 // high to disconnect
-#define LED 13              // built-in LED on the Nano board
+#define PBX_LINE_RING A1     // ring, red, -48V on hook
+#define PBX_LINE_TIP  A0     // tip, green, close to ground on hook
+#define DISCONNECT_SHUNT 4   // high to disconnect
+#define DISCONNECT_CO_PBX 3  // high to disconnect
+#define LED 13               // built-in LED on the Nano board
 
 #define MAXSAMPLES 10
 #define SAMPLE_INTERVAL 5 // msec
@@ -82,13 +82,13 @@
 enum line_state_t {ON_HOOK, OFF_HOOK, RINGING } last_linestate;
 char const *line_state_name [] = {"on hook", "off hook", "ringing" };
 
-static struct co_line_t { //**** info about a particular CO line wire
-   char const *name;
-   byte port; // which port reads the analog value
+static struct pbx_line_t { //**** info about each PBX line 
+   char const *name;  // Tip or Ring
+   byte port; // which port reads that analog voltage value
    short int nextsample;
    int samples[MAXSAMPLES]; } // the array of previous samples}
-co_tip = {"Tip", CO_LINE_TIP, 0 },
-co_ring = {"Ring", CO_LINE_RING, 0 };
+pbx_tip = {"Tip", PBX_LINE_TIP, 0 },
+pbx_ring = {"Ring", PBX_LINE_RING, 0 };
 static unsigned long count = 0;
 
 // The scaling and biasing circuits were inspired by this paper: http://www.symres.com/files/scalebias.pdf
@@ -98,7 +98,7 @@ static unsigned long count = 0;
 #define RB 7.15E3
 #define RC 158E3
 
-int read_voltage(struct co_line_t *p) {
+int read_voltage(struct pbx_line_t *p) {
    uint16_t aval = analogRead(p->port);
    float Vout = (float)aval * Vref / 1024;
    float Vin = (Vout * (1 / RA + 1 / RB + 1 / RC) - Vbias / RB) * RA;
@@ -115,7 +115,7 @@ int read_voltage(struct co_line_t *p) {
    if (++p->nextsample >= MAXSAMPLES) p->nextsample = 0;
    return V; }
 
-void show_samples(struct co_line_t *p) {
+void show_samples(struct pbx_line_t *p) {
    Serial.print(count); Serial.print(", ");
    Serial.print(p->name); Serial.print(": ");
    int i = p->nextsample;
@@ -128,16 +128,16 @@ void show_samples(struct co_line_t *p) {
    Serial.flush(); }
 
 enum line_state_t newlinestate(void) {
-   /****** the state rules, based on the voltage we see on each line
-      ring between -40 and -60, and tip between -10 and +10 for 50 msec: on hook
-      ring between -15 and -40, and tip between -10 and -30 for 50 msec: off hook
-      ring below -70 and tip above -10 for at least 2 samples: ringing
+   /****** the state rules, based on the voltage we see on the PBX lines...
+      Ring between -40 and -60, and Tip between -10 and +10 for 50 msec: on hook
+      Ring between -15 and -40, and Tip between -10 and -30 for 50 msec: off hook
+      Ring below -70 and Tip above -10 for at least 2 samples: ringing
       otherwise: keep current state  */
    bool onhook = true, offhook = true;
    int ringing_samples = 0;
    for (int i = 0; i < MAXSAMPLES; ++i) {
-      int v_ring = co_ring.samples[i];
-      int v_tip = co_tip.samples[i];
+      int v_ring = pbx_ring.samples[i];
+      int v_tip = pbx_tip.samples[i];
       if (v_ring > -40 || v_ring < -60 || v_tip > 10 || v_tip < -10) onhook = false;
       if (v_ring > -15 || v_ring < -40 || v_tip > -10 || v_tip < -30) offhook = false;
       if (v_ring < -70 && v_tip > -10) ++ringing_samples; }
@@ -155,14 +155,14 @@ void setup(void) {
    while (!Serial) ;
    Serial.println("phone fixer started");
    #endif
-   pinMode(CO_LINE_RING, INPUT);
-   pinMode(CO_LINE_TIP, INPUT);
+   pinMode(PBX_LINE_RING, INPUT);
+   pinMode(PBX_LINE_TIP, INPUT);
    pinMode(DISCONNECT_SHUNT, OUTPUT);
    pinMode(DISCONNECT_CO_PBX, OUTPUT);
    pinMode(LED, OUTPUT);
    digitalWrite(LED, LOW);
    #if TEST_MOSFETS
-   while (1) {
+   while (1) { // use an analog multimeter to check for connectivity
       digitalWrite(DISCONNECT_SHUNT, true);
       digitalWrite(DISCONNECT_CO_PBX, true);
       delay(1000);
@@ -172,24 +172,24 @@ void setup(void) {
       delay(1000);
       digitalWrite(LED, LOW); }
    #endif
-   digitalWrite(DISCONNECT_SHUNT, true); // shunt is out
-   digitalWrite(DISCONNECT_CO_PBX, false); // CO and PBX are connected
-   for (int i = 0; i < MAXSAMPLES; ++i) { // initial fill of the sample arrays
-      read_voltage(&co_ring);
-      read_voltage(&co_tip); }
+   digitalWrite(DISCONNECT_SHUNT, true);    // shunt is out
+   digitalWrite(DISCONNECT_CO_PBX, false);  // CO and PBX are connected
+   for (int i = 0; i < MAXSAMPLES; ++i) {   // initial fill of the sample arrays
+      read_voltage(&pbx_ring);
+      read_voltage(&pbx_tip); }
    last_linestate = ON_HOOK; }
 
 void loop(void) {
    enum line_state_t new_linestate;
-   read_voltage(&co_ring);
-   read_voltage(&co_tip);
+   read_voltage(&pbx_ring);    // sample the PBX line voltages
+   read_voltage(&pbx_tip);
    #if DEBUG >=2
    Serial.print('\r'); Serial.print(CURSOR_UP2);
-   show_samples(&co_ring);
-   show_samples(&co_tip);
+   show_samples(&pbx_ring);
+   show_samples(&pbx_tip);
    #endif
-   new_linestate = newlinestate();
-   if (new_linestate != last_linestate) {
+   new_linestate = newlinestate(); 
+   if (new_linestate != last_linestate) { // the line state has changed
       #if DEBUG >= 1
       Serial.println(); Serial.println(); Serial.println();
       Serial.print("new state: "); Serial.println(line_state_name[new_linestate]);
@@ -198,14 +198,14 @@ void loop(void) {
       // if on hook then off hook, apply shunt, wait 600 msec, then remove
       if (last_linestate == ON_HOOK && new_linestate == OFF_HOOK) {
          digitalWrite(LED, HIGH);
-         digitalWrite(DISCONNECT_SHUNT, false); // put shunt in
+         digitalWrite(DISCONNECT_SHUNT, false); // put CO shunt in
          digitalWrite(DISCONNECT_CO_PBX, true); // disconnect CO and PBX
          #if DEBUG >=1
          Serial.println("line isolated");
          #endif
          delay(600);
          digitalWrite(DISCONNECT_CO_PBX, false); // connect CO and PBX
-         digitalWrite(DISCONNECT_SHUNT, true); // take shunt out
+         digitalWrite(DISCONNECT_SHUNT, true); // take CO shunt out
          digitalWrite(LED, LOW);
          #if DEBUG >= 1
          Serial.println("line connected");
